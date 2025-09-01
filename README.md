@@ -1,6 +1,7 @@
 ## Easy Laravel Docker
 This project aims to give you an easy way to deploy your Laravel application to a Docker-based host super quickly. The image and Dockerfile used is all production ready and ready to serve traffic directly or via a proxy (recommended). This is made for people wanting to host Laravel on their Homelabs or just simply on a server with Docker on.
 
+> [!NOTE]
 > Please note that this package is still new and probably has parts which can be improved. If you do find anything, please contribute by opening a pull-request!
 
 ### Prerequisites
