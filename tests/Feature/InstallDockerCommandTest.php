@@ -3,10 +3,10 @@
 use Illuminate\Support\Facades\File;
 
 beforeEach(function () {
-    $fixturePath = __DIR__ . '../Fixtures/Application';
+    $fixturePath = __DIR__ . '/../Fixtures/Application';
 
-    File::deleteDirectory($fixturePath);
-    File::makeDirectory($fixturePath);
+    File::cleanDirectory($fixturePath);
+    File::ensureDirectoryExists($fixturePath);
 
     $this->app->setBasePath($fixturePath);
 });
