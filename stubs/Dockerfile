@@ -5,7 +5,7 @@
 FROM serversideup/php:8.4-fpm-nginx-alpine AS base
 
 USER root
-RUN install-php-extensions intl
+# RUN install-php-extensions intl
 
 # Todo: Other extensions
 

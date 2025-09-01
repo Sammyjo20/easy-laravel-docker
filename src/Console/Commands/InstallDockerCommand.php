@@ -2,14 +2,18 @@
 
 namespace Sammyjo20\EasyLaravelDocker\Console\Commands;
 
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
 use function app;
 use function base_path;
 use function basename;
 use function config;
 use function dd;
+use function dump;
+use function filled;
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\info;
@@ -20,12 +24,6 @@ use const PHP_EOL;
 
 class InstallDockerCommand extends Command
 {
-    // Todo: Check Laravel Version, Must be >=12
-    // application nane
-    // php extensions required
-    // port
-    // mysql, sqlite or no database
-
     /**
      * The name and signature of the console command.
      *
@@ -43,10 +41,10 @@ class InstallDockerCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): void
+    public function handle(): int
     {
         if (!confirm('Are you sure you want to run the install:docker command?')) {
-            return;
+            return self::SUCCESS;
         }
 
         $applicationName = text('Please enter your application\'s name in slug-case', default: Str::slug(config('app.name')), required: true);
@@ -55,30 +53,39 @@ class InstallDockerCommand extends Command
 
         $databaseEngine = select('What database engine would you like to use?', options: ['MySQL', 'SQLite', 'None'], required: true);
 
-        // dd($databaseEngine);
+        $phpExtensions = text('Would you like to install any PHP extensions? Type them separated with commas', default: 'intl');
 
-        // Todo: PHP extensions
-        // Todo: Database preference
-
-        $stubPath = __DIR__ . '/../../../stubs';
+        $stubPath = __DIR__ . '/../../../stubs/';
 
         // Start with copying over the common files used in the root of the project
 
         $commonFiles = [
-            $stubPath . '/.dockerignore',
-            $stubPath . '/deploy.sh',
-            $stubPath . '/Dockerfile',
-            $stubPath . '/trustedproxy.php',
+            $stubPath . '.dockerignore',
+            $stubPath . 'deploy.sh',
+            $stubPath . 'Dockerfile',
+            $stubPath . 'config/trustedproxy.php',
         ];
 
         foreach ($commonFiles as $commonFile) {
-            $destination = base_path(basename($commonFile));
+            $destination = base_path(Str::remove($stubPath, $commonFile));
 
             if (File::exists($destination) && !confirm(sprintf('The file at "%s" already exists in the directory. Replace?', $destination))) {
                 continue;
             }
 
             $content = Str::replace('application-name', $applicationName, File::get($commonFile));
+
+            if (basename($commonFile) === 'Dockerfile') {
+                $phpExtensions = Str::of($phpExtensions)->replace(', ', ' ')->lower()->trim();
+
+                if (filled($phpExtensions)) {
+                    $content = Str::replace(
+                        search: '# RUN install-php-extensions intl',
+                        replace: 'RUN install-php-extensions ' . $phpExtensions,
+                        subject: $content
+                    );
+                }
+            }
 
             File::put($destination, $content);
         }
@@ -88,7 +95,7 @@ class InstallDockerCommand extends Command
         $environmentVariables = Str::replace(
             search: 'WEB_PORT=',
             replace: 'WEB_PORT=' . $applicationPort,
-            subject: File::get($stubPath . '/.env.template'),
+            subject: File::get($stubPath . '.env.template'),
         );
 
         $environmentVariables = PHP_EOL . $environmentVariables;
@@ -96,6 +103,26 @@ class InstallDockerCommand extends Command
         File::append(base_path('.env'), $environmentVariables);
         File::append(base_path('.env.example'), $environmentVariables);
 
-        // Todo: Remove itself once installed
+        // Next Find the docker-compose file to copy
+
+        $dockerComposeFile = match ($databaseEngine) {
+            'MySQL' => $stubPath . 'docker-compose.mysql.yml',
+            'SQLite' => $stubPath . 'docker-compose.sqlite.yml',
+            'None' => $stubPath . 'docker-compose.no-database.yml',
+        };
+
+        $content = Str::replace('application-name', $applicationName, File::get($dockerComposeFile));
+
+        File::put(base_path('docker-compose.yml'), $content);
+
+        // Wrap up
+
+        info('All done!');
+
+        if (confirm('Would you like to remove the sammyjo20/easy-laravel-docker package?')) {
+            Process::run('composer remove sammyjo20/easy-laravel-docker --dev')->throw();
+        }
+
+        return self::SUCCESS;
     }
 }
