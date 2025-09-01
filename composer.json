@@ -1,0 +1,29 @@
+{
+    "name": "sammyjo20/easy-laravel-docker",
+    "type": "project",
+    "require": {
+        "illuminate/support": "^12.26",
+        "illuminate/console": "^12.26"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^10.6"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Sammyjo20\\EasyLaravelDocker\\": "src/"
+        }
+    },
+    "autoload-dev": {
+      "psr-4": {
+        "Tests\\": "tests/"
+      }
+    },
+    "authors": [
+        {
+            "name": "Sammyjo20",
+            "email": "29132017+Sammyjo20@users.noreply.github.com"
+        }
+    ],
+    "minimum-stability": "stable"
+}

@@ -1,0 +1,21 @@
+# Operating system files and directories
+.DS_Store
+._.DS_Store
+
+# Editors and IDEs
+/.fleet
+/.idea
+/.vscode
+
+# Project dependencies
+/vendor
+/composer.lock
+
+# Caches, externally stored stuff, etc
+.php-cs-fixer.cache
+.phpunit.result.cache
+tests/Fixtures/Saloon/Testing
+.phpunit.cache/test-results
+
+# environments/configs
+phpstan.neon
