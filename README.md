@@ -35,7 +35,7 @@ The docker container will use the `.env` that is stored on the host machine.
 After the command has run, you will need to build your first image on the machine. All you have to do is run the following command
 
 ```
-docker build -t my-application .
+docker build -t {my-application} .
 ```
 
 This will create an image. After this you will be able to run the application.
