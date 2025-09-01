@@ -1,0 +1,49 @@
+services:
+  web:
+    depends_on:
+      - mysql
+    container_name: application-name-web
+    restart: unless-stopped
+    image: application-name
+    ports:
+      - "${WEB_PORT}:8080"
+    volumes:
+      - "./.env:/var/www/html/.env"
+      - "storage_private:/var/www/html/storage/app/private/"
+      - "storage_public:/var/www/html/storage/app/public/"
+      - "logs:/var/www/html/storage/logs"
+    environment:
+      - AUTORUN_ENABLED=true
+      - AUTORUN_LARAVEL_MIGRATION=true
+      - PHP_OPCACHE_ENABLE=1 # Enables OPCache
+      - SSL_MODE=off # Disables SSL (to be handled elsewhere)
+    healthcheck:
+      test: [ "CMD", "php-fpm-healthcheck" ]
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1k"
+        max-file: "3"
+  mysql:
+    container_name: application-name-mysql
+    restart: unless-stopped
+    image: mysql:latest
+    ports:
+      - "${MYSQL_PORT}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD} # Set this to a long, random password
+      - MYSQL_DATABASE=gaming_tracker
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1k"
+        max-file: "3"
+
+volumes:
+  mysql_data:
+  storage_private:
+  storage_public:
+  logs:

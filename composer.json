@@ -2,11 +2,15 @@
     "name": "sammyjo20/easy-laravel-docker",
     "type": "project",
     "require": {
+        "php": "^8.4",
         "illuminate/support": "^12.26",
-        "illuminate/console": "^12.26"
+        "illuminate/console": "^12.26",
+        "laravel/prompts": "^0.3.6"
     },
     "require-dev": {
-        "orchestra/testbench": "^10.6"
+        "orchestra/testbench": "^10.6",
+        "pestphp/pest": "^4.0",
+        "spatie/ray": "^1.42"
     },
     "license": "MIT",
     "autoload": {
@@ -15,9 +19,9 @@
         }
     },
     "autoload-dev": {
-      "psr-4": {
-        "Tests\\": "tests/"
-      }
+        "psr-4": {
+            "Sammyjo20\\EasyLaravelDocker\\Tests\\": "tests/"
+        }
     },
     "authors": [
         {
@@ -25,5 +29,17 @@
             "email": "29132017+Sammyjo20@users.noreply.github.com"
         }
     ],
-    "minimum-stability": "stable"
+    "minimum-stability": "stable",
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Sammyjo20\\EasyLaravelDocker\\EasyLaravelDockerServiceProvider"
+            ]
+        }
+    }
 }

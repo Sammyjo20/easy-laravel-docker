@@ -1,0 +1,32 @@
+services:
+  web:
+    container_name: application-name-web
+    restart: unless-stopped
+    image: application-name
+    ports:
+      - "${WEB_PORT}:8080"
+    volumes:
+      - "./.env:/var/www/html/.env"
+      - "database:/var/www/html/database/sqlite"
+      - "storage_private:/var/www/html/storage/app/private/"
+      - "storage_public:/var/www/html/storage/app/public/"
+      - "logs:/var/www/html/storage/logs"
+    environment:
+      - AUTORUN_ENABLED=true
+      - AUTORUN_LARAVEL_MIGRATION=true
+      - PHP_OPCACHE_ENABLE=1 # Enables OPCache
+      - SSL_MODE=off # Disables SSL (to be handled elsewhere)
+    healthcheck:
+      test: [ "CMD", "php-fpm-healthcheck" ]
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1k"
+        max-file: "3"
+
+volumes:
+  database:
+  storage_private:
+  storage_public:
+  logs:

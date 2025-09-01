@@ -6,10 +6,8 @@ This project contains a really simple Dockerfile, docker-compose.yml file for ru
 ### Installation
 
 ```
-composer require --dev sammyjo20/easy-laravel-docker
+composer require sammyjo20/easy-laravel-docker --dev
 ```
-
-Then all you need to run is
 
 ```
 php artisan install:docker
