@@ -1,26 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sammyjo20\EasyLaravelDocker\Console\Commands;
 
-use Exception;
+use const PHP_EOL;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
-use function app;
 use function base_path;
 use function basename;
 use function config;
-use function dd;
-use function dump;
 use function filled;
 use function Laravel\Prompts\confirm;
-use function Laravel\Prompts\error;
 use function Laravel\Prompts\info;
-use function Laravel\Prompts\text;
 use function Laravel\Prompts\select;
-use function ray;
-use const PHP_EOL;
+use function Laravel\Prompts\spin;
+use function Laravel\Prompts\text;
 
 class InstallDockerCommand extends Command
 {
@@ -43,33 +40,35 @@ class InstallDockerCommand extends Command
      */
     public function handle(): int
     {
-        if (!confirm('Are you sure you want to run the install:docker command?')) {
+        info('🐳 Howdy! ~ sammyjo20/easy-laravel-docker ~');
+
+        if (! confirm('Are you sure you want to run the install:docker command?')) {
             return self::SUCCESS;
         }
 
         $applicationName = text('Please enter your application\'s name in slug-case', default: Str::slug(config('app.name')), required: true);
 
-        $applicationPort = text('What port would you like your web server to run on?', default: 8080, required: true);
+        $applicationPort = text('What port would you like your web server to run on?', default: '8080', required: true);
 
         $databaseEngine = select('What database engine would you like to use?', options: ['MySQL', 'SQLite', 'None'], required: true);
 
         $phpExtensions = text('Would you like to install any PHP extensions? Type them separated with commas', default: 'intl');
 
-        $stubPath = __DIR__ . '/../../../stubs/';
+        $stubPath = __DIR__.'/../../../stubs/';
 
         // Start with copying over the common files used in the root of the project
 
         $commonFiles = [
-            $stubPath . '.dockerignore',
-            $stubPath . 'deploy.sh',
-            $stubPath . 'Dockerfile',
-            $stubPath . 'config/trustedproxy.php',
+            $stubPath.'.dockerignore',
+            $stubPath.'deploy.sh',
+            $stubPath.'Dockerfile',
+            $stubPath.'config/trustedproxy.php',
         ];
 
         foreach ($commonFiles as $commonFile) {
             $destination = base_path(Str::remove($stubPath, $commonFile));
 
-            if (File::exists($destination) && !confirm(sprintf('The file at "%s" already exists in the directory. Replace?', $destination))) {
+            if (File::exists($destination) && ! confirm(sprintf('The file at "%s" already exists in the directory. Replace?', $destination))) {
                 continue;
             }
 
@@ -81,7 +80,7 @@ class InstallDockerCommand extends Command
                 if (filled($phpExtensions)) {
                     $content = Str::replace(
                         search: '# RUN install-php-extensions intl',
-                        replace: 'RUN install-php-extensions ' . $phpExtensions,
+                        replace: 'RUN install-php-extensions '.$phpExtensions,
                         subject: $content
                     );
                 }
@@ -94,11 +93,11 @@ class InstallDockerCommand extends Command
 
         $environmentVariables = Str::replace(
             search: 'WEB_PORT=',
-            replace: 'WEB_PORT=' . $applicationPort,
-            subject: File::get($stubPath . '.env.template'),
+            replace: 'WEB_PORT='.$applicationPort,
+            subject: File::get($stubPath.'.env.template'),
         );
 
-        $environmentVariables = PHP_EOL . $environmentVariables;
+        $environmentVariables = PHP_EOL.$environmentVariables;
 
         File::append(base_path('.env'), $environmentVariables);
         File::append(base_path('.env.example'), $environmentVariables);
@@ -106,9 +105,9 @@ class InstallDockerCommand extends Command
         // Next Find the docker-compose file to copy
 
         $dockerComposeFile = match ($databaseEngine) {
-            'MySQL' => $stubPath . 'docker-compose.mysql.yml',
-            'SQLite' => $stubPath . 'docker-compose.sqlite.yml',
-            'None' => $stubPath . 'docker-compose.no-database.yml',
+            'MySQL' => $stubPath.'docker-compose.mysql.yml',
+            'SQLite' => $stubPath.'docker-compose.sqlite.yml',
+            'None' => $stubPath.'docker-compose.no-database.yml',
         };
 
         $content = Str::replace('application-name', $applicationName, File::get($dockerComposeFile));
@@ -118,7 +117,7 @@ class InstallDockerCommand extends Command
         // When the database engine is MySQL add the env templates for MySQL
 
         if ($databaseEngine === 'MySQL') {
-            $databaseEnvironmentVariables = Str::replace('application-name', $applicationName, File::get($stubPath . '.env.mysql.template'));
+            $databaseEnvironmentVariables = Str::replace('application-name', $applicationName, File::get($stubPath.'.env.mysql.template'));
 
             File::append(base_path('.env'), $databaseEnvironmentVariables);
             File::append(base_path('.env.example'), $databaseEnvironmentVariables);
@@ -126,11 +125,21 @@ class InstallDockerCommand extends Command
 
         // Wrap up
 
-        info('All done!');
+        info('✅ All done!');
 
-        if (confirm('Would you like to remove the sammyjo20/easy-laravel-docker package?')) {
-            Process::run('composer remove sammyjo20/easy-laravel-docker --dev')->throw();
+        if (! confirm('Would you like to remove the sammyjo20/easy-laravel-docker package?')) {
+            return self::SUCCESS;
         }
+
+        spin(function () {
+            $command = 'composer remove sammyjo20/easy-laravel-docker';
+
+            if (Process::run($command.' --dev')->failed()) {
+                Process::run($command)->throw();
+            }
+        });
+
+        info('ℹ️ sammyjo20/easy-laravel-docker package removed. Thanks for using it!');
 
         return self::SUCCESS;
     }

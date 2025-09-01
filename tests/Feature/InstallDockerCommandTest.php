@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
@@ -10,7 +12,7 @@ beforeEach(function () {
 
     File::deleteDirectory($fixturePath);
     File::ensureDirectoryExists($fixturePath);
-    File::ensureDirectoryExists($fixturePath . '/config');
+    File::ensureDirectoryExists($fixturePath.'/config');
 
     $this->app->setBasePath($fixturePath);
 });
@@ -23,7 +25,7 @@ describe('run the install:docker command', function () {
             ->expectsQuestion('What port would you like your web server to run on?', '9999')
             ->expectsQuestion('What database engine would you like to use?', 'MySQL')
             ->expectsQuestion('Would you like to install any PHP extensions? Type them separated with commas', 'intl sqlite')
-            ->expectsPromptsInfo('All done!')
+            ->expectsPromptsInfo('✅ All done!')
             ->expectsConfirmation('Would you like to remove the sammyjo20/easy-laravel-docker package?', 'no')
             ->assertSuccessful();
 
@@ -55,7 +57,7 @@ describe('run the install:docker command', function () {
             ->expectsQuestion('What port would you like your web server to run on?', '9999')
             ->expectsQuestion('What database engine would you like to use?', 'SQLite')
             ->expectsQuestion('Would you like to install any PHP extensions? Type them separated with commas', 'intl sqlite')
-            ->expectsPromptsInfo('All done!')
+            ->expectsPromptsInfo('✅ All done!')
             ->expectsConfirmation('Would you like to remove the sammyjo20/easy-laravel-docker package?', 'no')
             ->assertSuccessful();
 
@@ -71,7 +73,7 @@ describe('run the install:docker command', function () {
             ->expectsQuestion('What port would you like your web server to run on?', '9999')
             ->expectsQuestion('What database engine would you like to use?', 'None')
             ->expectsQuestion('Would you like to install any PHP extensions? Type them separated with commas', 'intl sqlite')
-            ->expectsPromptsInfo('All done!')
+            ->expectsPromptsInfo('✅ All done!')
             ->expectsConfirmation('Would you like to remove the sammyjo20/easy-laravel-docker package?', 'yes')
             ->assertSuccessful();
 
