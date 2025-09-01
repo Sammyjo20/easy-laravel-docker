@@ -1,26 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sammyjo20\EasyLaravelDocker\Console\Commands;
 
-use Exception;
+use const PHP_EOL;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
-use function app;
 use function base_path;
 use function basename;
 use function config;
-use function dd;
-use function dump;
 use function filled;
 use function Laravel\Prompts\confirm;
-use function Laravel\Prompts\error;
 use function Laravel\Prompts\info;
-use function Laravel\Prompts\text;
 use function Laravel\Prompts\select;
-use function ray;
-use const PHP_EOL;
+use function Laravel\Prompts\spin;
+use function Laravel\Prompts\text;
 
 class InstallDockerCommand extends Command
 {
@@ -43,13 +40,15 @@ class InstallDockerCommand extends Command
      */
     public function handle(): int
     {
-        if (!confirm('Are you sure you want to run the install:docker command?')) {
+        info('🐳 Howdy! ~ sammyjo20/easy-laravel-docker ~');
+
+        if (! confirm('Are you sure you want to run the install:docker command?')) {
             return self::SUCCESS;
         }
 
         $applicationName = text('Please enter your application\'s name in slug-case', default: Str::slug(config('app.name')), required: true);
 
-        $applicationPort = text('What port would you like your web server to run on?', default: 8080, required: true);
+        $applicationPort = text('What port would you like your web server to run on?', default: '8080', required: true);
 
         $databaseEngine = select('What database engine would you like to use?', options: ['MySQL', 'SQLite', 'None'], required: true);
 
@@ -69,7 +68,7 @@ class InstallDockerCommand extends Command
         foreach ($commonFiles as $commonFile) {
             $destination = base_path(Str::remove($stubPath, $commonFile));
 
-            if (File::exists($destination) && !confirm(sprintf('The file at "%s" already exists in the directory. Replace?', $destination))) {
+            if (File::exists($destination) && ! confirm(sprintf('The file at "%s" already exists in the directory. Replace?', $destination))) {
                 continue;
             }
 
@@ -126,11 +125,24 @@ class InstallDockerCommand extends Command
 
         // Wrap up
 
-        info('All done!');
+        info('✅ All done!');
 
-        if (confirm('Would you like to remove the sammyjo20/easy-laravel-docker package?')) {
-            Process::run('composer remove sammyjo20/easy-laravel-docker --dev')->throw();
+        info(sprintf('1. Run "docker build -t %s ." to build the image.', $applicationName));
+        info('2. Run "docker compose up" to spin up the container.');
+
+        if (! confirm('Would you like to remove the sammyjo20/easy-laravel-docker package?')) {
+            return self::SUCCESS;
         }
+
+        spin(function () {
+            $command = 'composer remove sammyjo20/easy-laravel-docker';
+
+            if (Process::run($command . ' --dev')->failed()) {
+                Process::run($command)->throw();
+            }
+        });
+
+        info('ℹ️ sammyjo20/easy-laravel-docker package removed. Thanks for using it!');
 
         return self::SUCCESS;
     }

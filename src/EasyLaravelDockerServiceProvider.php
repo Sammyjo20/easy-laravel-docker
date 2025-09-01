@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sammyjo20\EasyLaravelDocker;
 
 use Illuminate\Support\ServiceProvider;
