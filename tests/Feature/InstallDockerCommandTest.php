@@ -29,11 +29,12 @@ describe('run the install:docker command', function () {
 
         $storage = $this->storage;
 
-        expect($storage->get('.env'))->toContain('WEB_PORT=9999');
-        expect($storage->get('.env'))->toContain('TRUSTED_PROXIES=0.0.0.0/0');
-
-        expect($storage->get('.env.example'))->toContain('WEB_PORT=9999');
-        expect($storage->get('.env.example'))->toContain('TRUSTED_PROXIES=0.0.0.0/0');
+        foreach (['.env', '.env.example'] as $env) {
+            expect($storage->get($env))->toContain('WEB_PORT=9999');
+            expect($storage->get($env))->toContain('TRUSTED_PROXIES=0.0.0.0/0');
+            expect($storage->get($env))->toContain('DOCKER_DB_DATABASE="${DB_DATABASE}"');
+            expect($storage->get($env))->toContain('DOCKER_DB_PASSWORD="secret"');
+        }
 
         expect($storage->get('docker-compose.yml'))->toContain('mysql:latest');
 
