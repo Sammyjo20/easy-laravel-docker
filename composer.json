@@ -9,7 +9,7 @@
     },
     "require-dev": {
         "orchestra/testbench": "^10.6",
-        "pestphp/pest": "^4.0",
+        "pestphp/pest": "^4.0.4",
         "spatie/ray": "^1.42"
     },
     "license": "MIT",
