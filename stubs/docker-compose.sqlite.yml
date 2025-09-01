@@ -4,7 +4,8 @@ services:
     restart: unless-stopped
     image: application-name
     ports:
-      - "${WEB_PORT}:8080"
+      - "${DOCKER_WEB_PORT}:8080"
+    stop_signal: SIGTERM
     volumes:
       - "./.env:/var/www/html/.env"
       - "database:/var/www/html/database/sqlite"
@@ -24,6 +25,52 @@ services:
       options:
         max-size: "1k"
         max-file: "3"
+#  scheduler:
+#    depends_on:
+#      - web
+#    container_name: application-name-scheduler
+#    restart: unless-stopped
+#    image: application-name
+#    command: [ "php", "/var/www/html/artisan", "schedule:work" ]
+#    volumes:
+#      - ./.env:/var/www/html/.env
+#      - logs:/var/www/html/storage/logs
+#    stop_signal: SIGTERM
+#    healthcheck:
+#      test: [ "CMD", "healthcheck-schedule" ]
+#      start_period: 10s
+#    environment:
+#      - AUTORUN_ENABLED=true
+#      - AUTORUN_LARAVEL_MIGRATION=false
+#      - PHP_OPCACHE_ENABLE=1
+#    logging:
+#      driver: "json-file"
+#      options:
+#        max-size: "1k"
+#        max-file: "3"
+#
+#  queue:
+#    depends_on:
+#      - web
+#    container_name: application-name-queue
+#    restart: unless-stopped
+#    image: application-name
+#    command: [ "php", "/var/www/html/artisan", "queue:work", "--tries=3" ]
+#    volumes:
+#      - ./.env:/var/www/html/.env
+#    stop_signal: SIGTERM
+#    healthcheck:
+#      test: [ "CMD", "healthcheck-queue" ]
+#      start_period: 10s
+#    environment:
+#      - AUTORUN_ENABLED=true
+#      - AUTORUN_LARAVEL_MIGRATION=false
+#      - PHP_OPCACHE_ENABLE=1
+#    logging:
+#      driver: "json-file"
+#      options:
+#        max-size: "1k"
+#        max-file: "3"
 
 volumes:
   database:

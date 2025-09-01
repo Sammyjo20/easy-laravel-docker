@@ -115,6 +115,15 @@ class InstallDockerCommand extends Command
 
         File::put(base_path('docker-compose.yml'), $content);
 
+        // When the database engine is MySQL add the env templates for MySQL
+
+        if ($databaseEngine === 'MySQL') {
+            $databaseEnvironmentVariables = Str::replace('application-name', $applicationName, File::get($stubPath . '.env.mysql.template'));
+
+            File::append(base_path('.env'), $databaseEnvironmentVariables);
+            File::append(base_path('.env.example'), $databaseEnvironmentVariables);
+        }
+
         // Wrap up
 
         info('All done!');
