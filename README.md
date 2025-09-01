@@ -68,6 +68,9 @@ This package provides configuration for a Laravel Scheduler and Queue out of the
 ### Deployments
 A convenient `deploy.sh` has been provided in this framework. You can run this on your host to automatically pull from your main branch and rebuild the Docker container.
 
+### Proxies
+It's recommended to reverse proxy traffic into the port of the web container rather than running the container directly on port 80 or 443. You can use the `TRUSTED_PROXIES` .env variable to restrict traffic to specific CIDR ranges or IPs.
+
 ## Also... bring your own configuration!
 
 This is just a starting point to get your application live as quickly as possible. Once this package has created the baseline files, configure away.
