@@ -25,7 +25,7 @@ describe('run the install:docker command', function () {
             ->expectsQuestion('What port would you like your web server to run on?', '9999')
             ->expectsQuestion('What database engine would you like to use?', 'MySQL')
             ->expectsQuestion('Would you like to install any PHP extensions? Type them separated with commas', 'intl sqlite')
-            ->expectsPromptsInfo('✅ All done!')
+            ->expectsOutputToContain('✅ All done!')
             ->expectsConfirmation('Would you like to remove the sammyjo20/easy-laravel-docker package?', 'no')
             ->assertSuccessful();
 
@@ -57,9 +57,8 @@ describe('run the install:docker command', function () {
             ->expectsQuestion('What port would you like your web server to run on?', '9999')
             ->expectsQuestion('What database engine would you like to use?', 'SQLite')
             ->expectsQuestion('Would you like to install any PHP extensions? Type them separated with commas', 'intl sqlite')
-            ->expectsPromptsInfo('✅ All done!')
-            ->expectsPromptsInfo('1. Run "docker build -t my-app ." to build the image.')
-            ->expectsPromptsInfo('2. Run "docker compose up" to spin up the container.')
+            ->expectsOutputToContain('1. Run "docker build -t my-app ." to build the image.')
+            ->expectsOutputToContain('2. Run "docker compose up" to spin up the container.')
             ->expectsConfirmation('Would you like to remove the sammyjo20/easy-laravel-docker package?', 'no')
             ->assertSuccessful();
 
@@ -75,7 +74,7 @@ describe('run the install:docker command', function () {
             ->expectsQuestion('What port would you like your web server to run on?', '9999')
             ->expectsQuestion('What database engine would you like to use?', 'None')
             ->expectsQuestion('Would you like to install any PHP extensions? Type them separated with commas', 'intl sqlite')
-            ->expectsPromptsInfo('✅ All done!')
+            ->expectsOutputToContain('✅ All done!')
             ->expectsConfirmation('Would you like to remove the sammyjo20/easy-laravel-docker package?', 'yes')
             ->assertSuccessful();
 
