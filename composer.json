@@ -4,7 +4,8 @@
     "require": {
         "php": "^8.4",
         "illuminate/support": "^11.47 || ^12.26",
-        "illuminate/console": "^11.47 || ^12.26"
+        "illuminate/console": "^11.47 || ^12.26",
+        "laravel/prompts": "^0.3.11"
     },
     "require-dev": {
         "orchestra/testbench": "^9.16 || ^10.6",
