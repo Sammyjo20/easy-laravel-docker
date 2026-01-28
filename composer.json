@@ -8,7 +8,7 @@
     },
     "require-dev": {
         "orchestra/testbench": "^9.16 || ^10.6",
-        "pestphp/pest": "^4.0.4",
+        "pestphp/pest": "^3.8.4 || ^4.0.4",
         "laravel/pint": "^1.24"
     },
     "license": "MIT",
