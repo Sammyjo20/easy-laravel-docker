@@ -3,11 +3,11 @@
     "type": "project",
     "require": {
         "php": "^8.4",
-        "illuminate/support": "^11.47 || ^12.26",
-        "illuminate/console": "^11.47 || ^12.26"
+        "illuminate/support": "^11.47 || ^12.26 || ^13.0",
+        "illuminate/console": "^11.47 || ^12.26 || ^13.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^9.16 || ^10.6",
+        "orchestra/testbench": "^9.16 || ^10.6 || ^11.0",
         "pestphp/pest": "^3.8.4 || ^4.0.4",
         "laravel/pint": "^1.24"
     },
